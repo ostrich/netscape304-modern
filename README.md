@@ -29,7 +29,7 @@ Check [WinWorld](https://winworldpc.com/download/98b984dd-c8b4-11ec-b931-0200008
 - `bash`, `curl`, `ar`, `find`, `tar`
 - a C compiler with 32-bit build support for `gcc -m32` or equivalent
 - `/usr/bin/getent` for the DNS shim
-- `xset` to register the bundled bitmap fonts with the X server
+- optional: `xset` to register the bundled bitmap fonts with the X server
   - Common package names: `xorg-xset` on Arch, `x11-xserver-utils` on Debian/Ubuntu, `xset` on Fedora.
 
 ## Notes
