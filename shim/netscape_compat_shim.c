@@ -2,12 +2,14 @@
 
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
+#include <unistd.h>
 
 /* Netscape copy-relocates these old libc globals with fixed sizes. */
 unsigned char _res[0x180];
@@ -99,12 +101,20 @@ static struct hostent *build_hostent_from_ipv4(const char *name, uint32_t addr_b
 }
 
 struct hostent *gethostbyname(const char *name) {
-  char cmd[512];
   char line[512];
   char ip[INET_ADDRSTRLEN];
-  FILE *fp;
   struct in_addr addr;
-  size_t i;
+  int pipefd[2];
+  pid_t pid;
+  ssize_t nread;
+  int status;
+  FILE *fp;
+  char *argv[] = {
+    "/usr/bin/getent",
+    "ahostsv4",
+    (char *)name,
+    NULL
+  };
 
   shim_log("gethostbyname(%s)", name ? name : "(null)");
   if (!name || !*name) {
@@ -112,31 +122,62 @@ struct hostent *gethostbyname(const char *name) {
     return NULL;
   }
 
-  for (i = 0; name[i]; i++) {
-    if (!((name[i] >= 'a' && name[i] <= 'z') ||
-          (name[i] >= 'A' && name[i] <= 'Z') ||
-          (name[i] >= '0' && name[i] <= '9') ||
-          name[i] == '.' || name[i] == '-')) {
-      shim_log("refusing to resolve suspicious hostname: %s", name);
-      h_errno = HOST_NOT_FOUND;
-      return NULL;
-    }
-  }
-
-  snprintf(cmd, sizeof(cmd), "/usr/bin/getent ahostsv4 '%s' 2>/dev/null", name);
-  fp = popen(cmd, "r");
-  if (!fp) {
+  if (pipe(pipefd) != 0) {
     h_errno = TRY_AGAIN;
     return NULL;
   }
 
+  pid = fork();
+  if (pid < 0) {
+    close(pipefd[0]);
+    close(pipefd[1]);
+    h_errno = TRY_AGAIN;
+    return NULL;
+  }
+
+  if (pid == 0) {
+    close(pipefd[0]);
+    dup2(pipefd[1], STDOUT_FILENO);
+    dup2(pipefd[1], STDERR_FILENO);
+    close(pipefd[1]);
+    execv(argv[0], argv);
+    _exit(127);
+  }
+
+  close(pipefd[1]);
+  fp = fdopen(pipefd[0], "r");
+  if (!fp) {
+    close(pipefd[0]);
+    waitpid(pid, NULL, 0);
+    h_errno = TRY_AGAIN;
+    return NULL;
+  }
+
+  line[0] = '\0';
   if (!fgets(line, sizeof(line), fp)) {
-    pclose(fp);
+    fclose(fp);
+    waitpid(pid, &status, 0);
     h_errno = HOST_NOT_FOUND;
     return NULL;
   }
 
-  pclose(fp);
+  nread = (ssize_t)strlen(line);
+  if (nread > 0 && line[nread - 1] != '\n') {
+    int ch;
+    while ((ch = fgetc(fp)) != EOF && ch != '\n') {
+    }
+  }
+
+  fclose(fp);
+  if (waitpid(pid, &status, 0) < 0) {
+    h_errno = TRY_AGAIN;
+    return NULL;
+  }
+
+  if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+    h_errno = HOST_NOT_FOUND;
+    return NULL;
+  }
   if (sscanf(line, "%15s", ip) != 1) {
     h_errno = HOST_NOT_FOUND;
     return NULL;
