@@ -7,8 +7,8 @@ SHIM_LIB="$ROOT_DIR/compat/shim/libnetscape_compat_shim.so"
 X11_DATA_DIR="$ROOT_DIR/compat/x11"
 FONT_ROOT="$ROOT_DIR/compat/fonts"
 STATE_HOME="$ROOT_DIR/state"
-BIN_DIR="$ROOT_DIR/extracted"
-NETSCAPE_BIN="$BIN_DIR/netscape"
+APP_DIR="$ROOT_DIR/app"
+NETSCAPE_BIN="$APP_DIR/netscape"
 ARCHIVE_PATH="${NETSCAPE_ARCHIVE:-$ROOT_DIR/netscape-v304-export_x86-unknown-linux-elf_tar.gz}"
 LOADER_CANDIDATES=(
   "/usr/lib32/ld-linux.so.2"
@@ -99,7 +99,7 @@ if [[ -d "$X11_DATA_DIR/locale" ]]; then
   export XNLSPATH="$X11_DATA_CWD/locale"
   export XLOCALEDIR="$X11_DATA_CWD/locale"
 fi
-export MOZILLA_HOME="$BIN_DIR"
+export MOZILLA_HOME="$APP_DIR"
 export LD_LIBRARY_PATH="$COMPAT_LIB_DIR"
 ARGS=()
 

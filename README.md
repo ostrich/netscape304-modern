@@ -19,7 +19,7 @@ Check [WinWorld](https://winworldpc.com/download/98b984dd-c8b4-11ec-b931-0200008
 - downloads old Debian `libc5` and X11 runtime packages into `compat/`
 - stages classic X bitmap fonts locally under `compat/fonts/`
 - builds a small 32-bit preload shim that patches a few startup, DNS, and X11 incompatibilities
-- extracts the supplied Netscape tarball into `extracted/`
+- extracts the supplied Netscape tarball into `app/`
 - launches Netscape with a local state directory under `state/`
 
 ## Requirements

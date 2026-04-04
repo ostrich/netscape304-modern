@@ -10,8 +10,8 @@ X11_DIR="$COMPAT_DIR/x11"
 FONT_DIR="$COMPAT_DIR/fonts"
 SHIM_DIR="$ROOT_DIR/shim"
 SHIM_OUT_DIR="$ROOT_DIR/compat/shim"
-BIN_DIR="$ROOT_DIR/extracted"
-NETSCAPE_BIN="$BIN_DIR/netscape"
+APP_DIR="$ROOT_DIR/app"
+NETSCAPE_BIN="$APP_DIR/netscape"
 NETSCAPE_ARCHIVE="${NETSCAPE_ARCHIVE:-$ROOT_DIR/netscape-v304-export_x86-unknown-linux-elf_tar.gz}"
 
 BASE_URL="https://archive.debian.org/debian"
@@ -75,7 +75,7 @@ if [[ ! -x "$NETSCAPE_BIN" && ! -f "$NETSCAPE_ARCHIVE" ]]; then
   exit 1
 fi
 
-mkdir -p "$ARCHIVE_DIR" "$BUILD_DIR" "$LIB_DIR" "$X11_DIR" "$FONT_DIR"
+mkdir -p "$ARCHIVE_DIR" "$BUILD_DIR" "$LIB_DIR" "$X11_DIR" "$FONT_DIR" "$APP_DIR"
 
 for relpath in "${PACKAGES[@]}"; do
   file_name="${relpath##*/}"
@@ -119,8 +119,8 @@ gcc -m32 -shared -fPIC \
   "$SHIM_DIR/netscape_compat_shim.c"
 
 if [[ ! -x "$NETSCAPE_BIN" ]]; then
-  mkdir -p "$BIN_DIR"
-  tar -xzf "$NETSCAPE_ARCHIVE" -C "$BIN_DIR"
+  mkdir -p "$APP_DIR"
+  tar -xzf "$NETSCAPE_ARCHIVE" -C "$APP_DIR"
 fi
 
 print_staged_entries "compat libraries staged" "$LIB_DIR"
