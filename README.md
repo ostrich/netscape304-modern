@@ -1,6 +1,6 @@
 # netscape304-modern
 
-Launch Netscape Navigator 3.04 for Linux on a modern Linux system without installing old system packages.
+Launch Netscape Navigator 3.04 for Linux on a modern Linux system in a self contained environment.
 
 This repo does not include the Netscape binary. You must supply:
 
