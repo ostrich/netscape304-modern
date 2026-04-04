@@ -61,6 +61,11 @@ need_cmd find
 need_cmd gcc
 need_cmd tar
 
+if [[ ! -x "$NETSCAPE_BIN" && ! -f "$NETSCAPE_ARCHIVE" ]]; then
+  printf 'missing Netscape archive: %s\n' "$NETSCAPE_ARCHIVE" >&2
+  exit 1
+fi
+
 mkdir -p "$ARCHIVE_DIR" "$BUILD_DIR" "$LIB_DIR" "$X11_DIR" "$FONT_DIR"
 
 for relpath in "${PACKAGES[@]}"; do
@@ -105,10 +110,6 @@ gcc -m32 -shared -fPIC \
   "$SHIM_DIR/netscape_compat_shim.c"
 
 if [[ ! -x "$NETSCAPE_BIN" ]]; then
-  if [[ ! -f "$NETSCAPE_ARCHIVE" ]]; then
-    printf 'missing Netscape archive: %s\n' "$NETSCAPE_ARCHIVE" >&2
-    exit 1
-  fi
   mkdir -p "$BIN_DIR"
   tar -xzf "$NETSCAPE_ARCHIVE" -C "$BIN_DIR"
 fi
