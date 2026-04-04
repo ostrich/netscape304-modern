@@ -55,6 +55,14 @@ copy_matches() {
   done
 }
 
+print_staged_entries() {
+  local label="$1"
+  local dir="$2"
+
+  printf '\n%s in %s\n' "$label" "$dir"
+  find "$dir" -mindepth 1 -maxdepth 1 | sort
+}
+
 need_cmd curl
 need_cmd ar
 need_cmd find
@@ -114,7 +122,8 @@ if [[ ! -x "$NETSCAPE_BIN" ]]; then
   tar -xzf "$NETSCAPE_ARCHIVE" -C "$BIN_DIR"
 fi
 
-printf '\ncompat libraries staged in %s\n' "$LIB_DIR"
-find "$LIB_DIR" -maxdepth 1 -type f | sort
+print_staged_entries "compat libraries staged" "$LIB_DIR"
+print_staged_entries "X11 support data staged" "$X11_DIR"
+print_staged_entries "bitmap fonts staged" "$FONT_DIR"
 printf '\nshim built at %s\n' "$SHIM_OUT_DIR/libnetscape_compat_shim.so"
-printf 'netscape extracted to %s\n' "$BIN_DIR"
+printf 'netscape available at %s\n' "$NETSCAPE_BIN"
