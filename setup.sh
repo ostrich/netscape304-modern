@@ -71,6 +71,7 @@ need_cmd tar
 
 if [[ ! -x "$NETSCAPE_BIN" && ! -f "$NETSCAPE_ARCHIVE" ]]; then
   printf 'missing Netscape archive: %s\n' "$NETSCAPE_ARCHIVE" >&2
+  printf 'try https://winworldpc.com/download/98b984dd-c8b4-11ec-b931-0200008a0da4\n' >&2
   exit 1
 fi
 
