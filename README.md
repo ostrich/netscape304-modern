@@ -2,6 +2,8 @@
 
 Launch Netscape Navigator 3.04 for Linux on a modern Linux system in a self contained environment.
 
+![Netscape Navigator 3.04 running in the compatibility environment](docs/netscape304.png)
+
 This repo does not include the Netscape binary. You must supply:
 
 - `netscape-v304-export_x86-unknown-linux-elf_tar.gz`
