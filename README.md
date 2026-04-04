@@ -20,7 +20,7 @@ Check [WinWorld](https://winworldpc.com/download/98b984dd-c8b4-11ec-b931-0200008
 - stages classic X bitmap fonts locally under `compat/fonts/`
 - builds a small 32-bit preload shim that patches a few startup, DNS, and X11 incompatibilities
 - extracts the supplied Netscape tarball into `extracted/`
-- launches Netscape with a local state directory under `state/home/`
+- launches Netscape with a local state directory under `state/`
 
 ## Requirements
 
