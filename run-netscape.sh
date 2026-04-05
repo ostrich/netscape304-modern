@@ -9,7 +9,7 @@ FONT_ROOT="$ROOT_DIR/compat/fonts"
 STATE_HOME="$ROOT_DIR/state"
 APP_DIR="$ROOT_DIR/app"
 NETSCAPE_BIN="$APP_DIR/netscape"
-ARCHIVE_PATH="${NETSCAPE_ARCHIVE:-$ROOT_DIR/netscape-v304-export_x86-unknown-linux-elf_tar.gz}"
+NETSCAPE_ARCHIVE="${NETSCAPE_ARCHIVE:-$ROOT_DIR/netscape-v304-export_x86-unknown-linux-elf_tar.gz}"
 LOADER_CANDIDATES=(
   "/usr/lib32/ld-linux.so.2"
   "/usr/lib/ld-linux.so.2"
@@ -50,17 +50,11 @@ cleanup_font_paths() {
   fi
 }
 
-cleanup_and_exit() {
-  local status="${1:-0}"
-  cleanup_font_paths
-  exit "$status"
-}
-
 if [[ ! -x "$NETSCAPE_BIN" ]]; then
   printf 'missing %s\n' "$NETSCAPE_BIN" >&2
   printf 'run ./setup.sh first.\n' >&2
-  if [[ ! -f "$ARCHIVE_PATH" ]]; then
-    printf 'expected Netscape archive at %s\n' "$ARCHIVE_PATH" >&2
+  if [[ ! -f "$NETSCAPE_ARCHIVE" ]]; then
+    printf 'expected Netscape archive at %s\n' "$NETSCAPE_ARCHIVE" >&2
   fi
   exit 1
 fi
@@ -116,9 +110,9 @@ else
   printf 'warning: xset not found; bundled bitmap fonts were not registered, so old X font warnings may remain.\n' >&2
 fi
 
-trap 'cleanup_and_exit 130' INT
-trap 'cleanup_and_exit 143' TERM
-trap 'cleanup_and_exit 129' HUP
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
 trap cleanup_font_paths EXIT
 
 "$LOADER" \
@@ -127,6 +121,3 @@ trap cleanup_font_paths EXIT
   "$NETSCAPE_BIN" \
   "${ARGS[@]}" \
   "$@"
-
-status=$?
-cleanup_and_exit "$status"

@@ -75,7 +75,7 @@ if [[ ! -x "$NETSCAPE_BIN" && ! -f "$NETSCAPE_ARCHIVE" ]]; then
   exit 1
 fi
 
-mkdir -p "$ARCHIVE_DIR" "$BUILD_DIR" "$LIB_DIR" "$X11_DIR" "$FONT_DIR" "$APP_DIR"
+mkdir -p "$ARCHIVE_DIR"
 
 for relpath in "${PACKAGES[@]}"; do
   file_name="${relpath##*/}"
@@ -119,7 +119,6 @@ gcc -m32 -shared -fPIC \
   "$SHIM_DIR/netscape_compat_shim.c"
 
 if [[ ! -x "$NETSCAPE_BIN" ]]; then
-  mkdir -p "$APP_DIR"
   tar -xzf "$NETSCAPE_ARCHIVE" -C "$APP_DIR"
 fi
 
