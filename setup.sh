@@ -13,6 +13,7 @@ SHIM_OUT_DIR="$ROOT_DIR/compat/shim"
 APP_DIR="$ROOT_DIR/app"
 NETSCAPE_BIN="$APP_DIR/netscape"
 NETSCAPE_ARCHIVE="${NETSCAPE_ARCHIVE:-$ROOT_DIR/netscape-v304-export_x86-unknown-linux-elf_tar.gz}"
+NETSCAPE_ARCHIVE_SHA256="8eaf2ab14fbc4ff53a7d3443d6f1e49a9cf2205358eeb109318c0d471c52d993"
 
 BASE_URL="https://archive.debian.org/debian"
 
@@ -31,6 +32,20 @@ need_cmd() {
     printf 'missing required command: %s\n' "$1" >&2
     exit 1
   }
+}
+
+verify_sha256() {
+  local path="$1"
+  local expected="$2"
+  local actual
+
+  actual="$(sha256sum "$path" | awk '{print $1}')"
+  if [[ "$actual" != "$expected" ]]; then
+    printf 'checksum mismatch for %s\n' "$path" >&2
+    printf 'expected: %s\n' "$expected" >&2
+    printf 'actual:   %s\n' "$actual" >&2
+    exit 1
+  fi
 }
 
 extract_deb_data() {
@@ -68,11 +83,16 @@ need_cmd ar
 need_cmd find
 need_cmd gcc
 need_cmd tar
+need_cmd sha256sum
 
 if [[ ! -x "$NETSCAPE_BIN" && ! -f "$NETSCAPE_ARCHIVE" ]]; then
   printf 'missing Netscape archive: %s\n' "$NETSCAPE_ARCHIVE" >&2
   printf 'try https://winworldpc.com/download/98b984dd-c8b4-11ec-b931-0200008a0da4\n' >&2
   exit 1
+fi
+
+if [[ -f "$NETSCAPE_ARCHIVE" ]]; then
+  verify_sha256 "$NETSCAPE_ARCHIVE" "$NETSCAPE_ARCHIVE_SHA256"
 fi
 
 mkdir -p "$ARCHIVE_DIR"
