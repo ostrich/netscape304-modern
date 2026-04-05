@@ -119,6 +119,7 @@ gcc -m32 -shared -fPIC \
   "$SHIM_DIR/netscape_compat_shim.c"
 
 if [[ ! -x "$NETSCAPE_BIN" ]]; then
+  mkdir -p "$APP_DIR"
   tar -xzf "$NETSCAPE_ARCHIVE" -C "$APP_DIR"
 fi
 
